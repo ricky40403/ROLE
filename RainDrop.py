@@ -29,6 +29,7 @@ class raindrop():
 
 
 	def updateTexture(self, bg):
+		print(bg.shape)
 		fg = pyblur.GaussianBlur(Image.fromarray(np.uint8(bg)), 5)
 		fg = np.asarray(fg)
 
