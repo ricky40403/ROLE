@@ -7,6 +7,44 @@ from PIL import Image
 from RainDrop import raindrop
 from PIL import ImageEnhance
 
+def CheckCollision(DropList):
+	listFinalDrops = []
+	Checked_list = []
+	list_len = len(DropList)
+	# because latter raindrops in raindrop list should has more colision information
+	# so reverse list	
+	DropList.reverse()
+	for drop in DropList:
+		# reset label map to handle collision		
+		if drop.getIfColli() and drop.getKey() not in Checked_list:
+			collision_list = drop.getCollisionList()
+			# first get radius and center to decide how  will the collision do
+			final_x = 0
+			final_y = 0
+			tmp_devide = 0
+			final_R = 0
+			for col_id in collision_list:				
+				Checked_list.append(col_id)
+				# list start from 0				
+				final_x += DropList[list_len - col_id].getRadius() * DropList[list_len - col_id].getCenters()[0]
+				final_y += DropList[list_len - col_id].getRadius() * DropList[list_len - col_id].getCenters()[1]
+				tmp_devide += DropList[list_len - col_id].getRadius()
+				final_R += DropList[list_len - col_id].getRadius() * DropList[list_len - col_id].getRadius() 
+			final_x = int(round(final_x/tmp_devide))
+			final_y = int(round(final_y/tmp_devide))
+			final_R = int(round(math.sqrt(final_R)))
+
+			newDrop = raindrop(drop.getKey(), (final_x, final_y), final_R)
+
+			listFinalDrops.append(newDrop)
+		# no collision
+		elif drop.getKey() not in Checked_list:
+			listFinalDrops.append(drop)
+	
+	print(len(listFinalDrops))
+	return listFinalDrops
+
+
 def generateDrops():
 	maxDrop = 30
 	maxR = 50
@@ -68,44 +106,24 @@ def generateDrops():
 	#########################
 	# Handle Collision
 	#########################
-	# because latter raindrops in raindrop list should has more colision information
-	# so reverse list
-	# store the raindrop which has handle the collision
-	Checked_list = []
-	listRainDrops.reverse()
-	listFinalDrops = []
-	key = 1
-	list_len = len(listRainDrops)
-	print(len(listRainDrops))
-	for drop in listRainDrops:
-		# reset label map to handle collision		
-		if drop.getIfColli() and drop.getKey() not in Checked_list:
-			collision_list = drop.getCollisionList()
-			# first get radius and center to decide how  will the collision do
-			final_x = 0
-			final_y = 0
-			tmp_devide = 0
-			final_R = 0
-			for col_id in collision_list:				
-				Checked_list.append(col_id)
-				# list start from 0				
-				final_x += listRainDrops[list_len - col_id].getRadius() * listRainDrops[list_len - col_id].getCenters()[0]
-				final_y += listRainDrops[list_len - col_id].getRadius() * listRainDrops[list_len - col_id].getCenters()[1]
-				tmp_devide += listRainDrops[list_len - col_id].getRadius()
-				final_R += listRainDrops[list_len - col_id].getRadius() * listRainDrops[list_len - col_id].getRadius() 
-			final_x = int(round(final_x/tmp_devide))
-			final_y = int(round(final_y/tmp_devide))
-			final_R = int(round(math.sqrt(final_R)))
+	
+	collisionNum = len(listRainDrops)
+	listFinalDrops = list(listRainDrops)
+	print(collisionNum)
+	while collisionNum > 0:
+		collisionNum = len(listFinalDrops)
+		
+		for drop in listFinalDrops:		
+			if not drop.getIfColli():
+				collisionNum = collisionNum -1
+		print(collisionNum)
+		if collisionNum > 0:
+			listFinalDrops = CheckCollision(listFinalDrops)		
+	
 
-			newDrop = raindrop(drop.getKey(), (final_x, final_y), final_R)
-
-			listFinalDrops.append(newDrop)
-		# no collision
-		elif drop.getKey() not in Checked_list:
-
-			listFinalDrops.append(drop)
-		# listFinalDrops.append(drop)
-	print(len(listFinalDrops))
+	
+	# listFinalDrops = CheckCollision(listRainDrops)
+	
 
 
 	# add alpha
