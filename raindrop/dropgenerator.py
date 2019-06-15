@@ -1,4 +1,5 @@
 import random
+from random import randint
 import cv2
 import math
 import numpy as np
@@ -63,13 +64,17 @@ def CheckCollision(DropList):
 	return listFinalDrops
 
 
-def generateDrops(imagePath):
+def generateDrops(imagePath, cfg):
 	"""
 	This function generate the drop with random position
 	"""
-	maxDrop = 30
-	maxR = 50
-	minR = 20
+	maxDrop = cfg["maxDrops"]
+	minDrop = cfg["minDrops"]
+	drop_num = randint(minDrop, maxDrop)
+	maxR = cfg["maxR"]
+	minR = cfg["minR"]
+	ifReturnLabel = cfg["return_label"]
+	edge_ratio = cfg["edge_darkratio"]
 
 	PIL_bg_img = Image.open(imagePath)
 	bg_img = np.asarray(PIL_bg_img)
@@ -78,7 +83,7 @@ def generateDrops(imagePath):
 	imgh, imgw, _ = bg_img.shape
 	
 	# random drops position
-	ran_pos = [(int(random.random() * imgw), int(random.random() * imgh)) for _ in range(maxDrop)]
+	ran_pos = [(int(random.random() * imgw), int(random.random() * imgh)) for _ in range(drop_num)]
 
 	listRainDrops = []
 	#########################
@@ -201,10 +206,17 @@ def generateDrops(imagePath):
 		tmp_alpha_map  = Image.fromarray(tmp_alpha_map.astype('uint8'))		
 
 		edge = ImageEnhance.Brightness(output)
-		brightness = 0.3
-		edge = edge.enhance(brightness)
+		edge = edge.enhance(edge_ratio)
 		PIL_bg_img.paste(edge, (ix-2*radius, iy-3*radius), tmp_alpha_map)
 		PIL_bg_img.paste(output, (ix-2*radius, iy-3*radius), output)
+
+	if ifReturnLabel:
+		output_label = np.array(alpha_map)
+		output_label.flags.writeable = True
+		output_label[output_label>0] = 1
+		output_label = Image.fromarray(output_label.astype('uint8'))	
+		return PIL_bg_img, output_label
+
 	return PIL_bg_img
 
 
