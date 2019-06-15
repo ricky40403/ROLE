@@ -15,12 +15,15 @@ def main():
 	outputlabel_folder_path = "Output_label"
 	for file_name in os.listdir(image_folder_path):
 		image_path = os.path.join(image_folder_path, file_name)
+		# output image and output label is both in PIL format
 		output_image, output_label = generateDrops(image_path, cfg)
 		save_path = os.path.join(outputimg_folder_path, file_name)
+		# save image
 		output_image.save(save_path)
 		save_path = os.path.join(outputlabel_folder_path, file_name)
+		# To show, need to multiply 255 
 		output_label = np.array(output_label)
-		cv2.imwrite(save_path, output_label*255)	
+		cv2.imwrite(save_path, output_label*255)
 
 if __name__ == "__main__":
 	main()
