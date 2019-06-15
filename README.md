@@ -47,7 +47,11 @@ Here using the darken background to make the effect, it can be change by using d
 from raindrop.dropgenerator import generateDrops
 
 # it will return image in pillow format
-output_image = generateDrops(image_path)
+# if using cfg["return_label"] = False
+output_image = generateDrops(image_path, cfg)
+
+# if using cfg["return_label"] = True
+output_image, output_label = generateDrops(image_path, cfg)
 ```
 The exmple is in the [exmple.py](example.py)
 
