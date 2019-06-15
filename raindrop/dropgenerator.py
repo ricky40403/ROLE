@@ -201,9 +201,9 @@ def generateDrops(imagePath):
 		tmp_alpha_map  = Image.fromarray(tmp_alpha_map.astype('uint8'))		
 
 		edge = ImageEnhance.Brightness(output)
-		brightness = 0.5
+		brightness = 0.3
 		edge = edge.enhance(brightness)
-		PIL_bg_img.paste(edge, (ix-2*radius, iy-3*radius), output)
+		PIL_bg_img.paste(edge, (ix-2*radius, iy-3*radius), tmp_alpha_map)
 		PIL_bg_img.paste(output, (ix-2*radius, iy-3*radius), output)
 	return PIL_bg_img
 
