@@ -18,6 +18,8 @@ pip install -r requirement.txt
 ****
 ## Introduction
 This repository is to create the simulation of water drop on the lens
+<img src=/Output_image/aachen_000001_000019_leftImg8bit.png
+ height= "300" width="500">  
 ****
 ### Drop generation
 
