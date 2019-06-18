@@ -9,7 +9,7 @@ Raindrop on lens effect
   * numpy
   * cv2
   * pillow
-  * [pyblur](https://github.com/lospooky/pyblur)
+  * [pyblur](https://github.com/lospooky/pyblur)  
 or directly use 
 ```
 pip install -r requirement.txt
