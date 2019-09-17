@@ -6,26 +6,43 @@ import pyblur
 
 
 class raindrop():
-	def __init__(self, key, centerxy, radius):
-		self.key = key		
-		self.ifcol = False	
-		self.col_with = []
-		self.center = centerxy
-		self.radius = radius
-		self.type = "default"
-		# label map's WxH = 4*R , 5*R
-		self.labelmap = np.zeros((self.radius * 5, self.radius*4))
-		self.alphamap = np.zeros((self.radius * 5, self.radius*4))
-		self.background = None
-		self.texture = None
-		self._create_label()
+	def __init__(self, key, centerxy = None, radius = None, input_alpha = None, input_label = None):
+		if input_label is None:
+			self.key = key		
+			self.ifcol = False	
+			self.col_with = []
+			self.center = centerxy
+			self.radius = radius
+			self.type = "default"
+			# label map's WxH = 4*R , 5*R
+			self.labelmap = np.zeros((self.radius * 5, self.radius*4))
+			self.alphamap = np.zeros((self.radius * 5, self.radius*4))
+			self.background = None
+			self.texture = None
+			self._create_label()
+			self.use_label = False
+		else:
+			self.key = key
+			assert input_alpha is not None, "Please also input the alpha map"
+			self.alphamap = input_alpha
+			self.labelmap =input_label
+			self.ifcol = False
+			self.col_with = []
+			# default shape should be [h,w]			
+			h, w = self.labelmap.shape
+			# set the label center
+			self.center = centerxy
+			self.radius = min(w//4, h//4)
+			self.background = None
+			self.texture = None
+			self.use_label = True
 
 	def setCollision(self, col, col_with):
 		self.ifcol = col
 		self.col_with = col_with
 
-	def updateTexture(self, bg):
-		# print(bg.shape)
+	def updateTexture(self, bg):		
+		
 		fg = pyblur.GaussianBlur(Image.fromarray(np.uint8(bg)), 5)
 		fg = np.asarray(fg)
 		# add fish eye effect to simulate the background
@@ -36,10 +53,11 @@ class raindrop():
 		Knew = K.copy()
 		Knew[(0,1), (0,1)] = math.pow(self.radius, 1/3)*2 * Knew[(0,1), (0,1)]
 		fisheye = cv2.fisheye.undistortImage(fg, K, D=D, Knew=Knew)
-
-		tmp = np.expand_dims(self.alphamap, axis = -1)
+		
+		
+		tmp = np.expand_dims(self.alphamap, axis = -1)		
 		tmp = np.concatenate((fisheye, tmp), axis = 2)
-
+		
 		self.texture = Image.fromarray(tmp.astype('uint8'), 'RGBA')
 		# most background in drop is flipped
 		self.texture = self.texture.transpose(Image.FLIP_TOP_BOTTOM)
@@ -91,3 +109,6 @@ class raindrop():
 
 	def getCollisionList(self):
 		return self.col_with
+	
+	def getUseLabel(self):
+		return self.use_label
