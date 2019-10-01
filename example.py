@@ -20,10 +20,12 @@ def main():
 	for file_name in os.listdir(image_folder_path):
 		image_path = os.path.join(image_folder_path, file_name)
 		# output image and output label is both in PIL format
+		
 		# randan generate by default
 		output_image, output_label = generateDrops(image_path, cfg)
 		# use label
 		# output_image, output_label = generateDrops(image_path, cfg, inputLabel = input_label)
+		
 		save_path = os.path.join(outputimg_folder_path, file_name)
 		# save image
 		output_image.save(save_path)
