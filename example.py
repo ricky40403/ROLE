@@ -16,7 +16,7 @@ def main():
 	outputimg_folder_path = "Output_image"
 	outputlabel_folder_path = "Output_label"
 	# using predifined label
-	input_label = Image.open("test.png")
+	# input_label = Image.open("test.png")
 	for file_name in os.listdir(image_folder_path):
 		image_path = os.path.join(image_folder_path, file_name)
 		# output image and output label is both in PIL format
